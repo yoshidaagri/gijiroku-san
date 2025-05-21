@@ -234,7 +234,7 @@ function generatePrompt() {
     const custom = document.getElementById("param-custom").value;
     
     // 基本プロンプト (先頭テキストを追加)
-    let prompt = introText + `以下のTeamsの会議トランスクリプトから議事録を作成してください。\n\n`;
+    let prompt = introText + `以下のTeamsの会議トランスクリプトから議事録を作成してください。である調でまとめてください。\n\n`;
     
     // 出力パラメータ
     prompt += `${getDetailLevel(gijiroku)}\n`;
