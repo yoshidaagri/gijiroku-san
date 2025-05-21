@@ -1,0 +1,488 @@
+/* ツールチップとパラメータ説明のスタイル */
+.form-text.text-muted {
+  font-size: 0.8rem;
+  margin-top: 5px;
+  line-height: 1.3;
+  color: #718096 !important;
+}
+
+.form-control option[title]:hover {
+  cursor: help;
+}
+
+select.form-control:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(76, 110, 245, 0.15);
+}/* 議事録さん - 公式文書風スタイル */
+:root {
+  --primary-color: #2c5282; /* 議事録らしい深い青色 */
+  --primary-hover: #1a365d;
+  --secondary-color: #ebf4ff;
+  --accent-color: #4c6ef5;
+  --text-color: #1a202c;
+  --light-text: #4a5568;
+  --border-color: #cbd5e0;
+  --bg-color: #f7fafc;
+  --panel-bg-color: #fff;  /* 白い背景で公式文書感を強化 */
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --radius: 6px;
+  --transition: all 0.2s ease;
+  --paper-texture: url("data:image/png;base64,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");
+}
+
+body {
+  font-family: 'Segoe UI', 'Meiryo UI', system-ui, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  margin: 0;
+  padding: 20px;
+}
+
+.container-fluid {
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ノートアイコン */
+.container-fluid::before {
+  content: "";
+  position: absolute;
+  top: -15px;
+  right: 15px;
+  width: 24px;
+  height: 24px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234a6da7' opacity='0.6'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.7;
+}
+
+.d-flex {
+  display: flex;
+  gap: 20px;
+}
+
+#file-content,
+#file-list {
+  background-color: var(--panel-bg-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  flex: 1;
+  position: relative;
+}
+
+/* 議事録らしいペーパーテクスチャを適用 */
+#file-list {
+  background-color: var(--panel-bg-color);
+  background-image: var(--paper-texture);
+  background-blend-mode: overlay;
+  background-size: 100px;
+}
+
+/* グリーンアクセントライン */
+#file-content::before,
+#file-list::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+}
+
+label {
+  color: var(--text-color);
+  margin-bottom: 6px;
+  display: block;
+  font-weight: 600;
+}
+
+textarea.form-control {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 12px;
+  width: 100%;
+  transition: var(--transition);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 16px;
+  background-color: var(--bg-color);  /* Softer background for textarea */
+}
+
+textarea.form-control:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(129, 199, 132, 0.2);
+  outline: none;
+}
+
+#drop-zone {
+  border: 2px dashed var(--accent-color);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  background-color: var(--secondary-color);
+  transition: var(--transition);
+  margin: 16px 0;
+  color: var(--light-text);
+  position: relative;
+}
+
+/* ドキュメントアイコンに修正 */
+#drop-zone::before {
+  content: "";
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 10px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236d8fc7' opacity='0.8'%3E%3Cpath d='M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+#drop-zone:hover {
+  background-color: #e0f2e0;
+  border-color: var(--primary-color);
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  position: relative;
+  padding-left: 36px;
+}
+
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M6.05 8.05c-2.73 2.73-2.73 7.17 0 9.9C7.42 19.34 9.21 20 11 20s3.58-.66 4.95-2.05c2.73-2.73 2.73-7.17 0-9.9C13.22 5.32 8.78 5.32 6.05 8.05zm1.41 1.41c1.95-1.95 5.12-1.95 7.07 0 1.95 1.95 1.95 5.12 0 7.07-1.95 1.95-5.12 1.95-7.07 0-1.95-1.95-1.95-5.12 0-7.07z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary {
+  background-color: #E0E0E0;
+  color: var(--text-color);
+  position: relative;
+  padding-left: 36px;
+}
+
+.btn-secondary::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23607D8B'%3E%3Cpath d='M6.05 8.05c-2.73 2.73-2.73 7.17 0 9.9C7.42 19.34 9.21 20 11 20s3.58-.66 4.95-2.05c2.73-2.73 2.73-7.17 0-9.9C13.22 5.32 8.78 5.32 6.05 8.05zm1.41 1.41c1.95-1.95 5.12-1.95 7.07 0 1.95 1.95 1.95 5.12 0 7.07-1.95 1.95-5.12 1.95-7.07 0-1.95-1.95-1.95-5.12 0-7.07z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.btn-secondary:hover {
+  background-color: #D0D0D0;
+}
+
+.file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.file-item:hover {
+  background-color: var(--secondary-color);
+}
+
+.delete-btn {
+  color: var(--light-text);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.delete-btn:hover {
+  color: #EF5350;
+}
+
+.custom-file {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.custom-file-input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.custom-file-label {
+  padding: 8px 16px 8px 40px;
+  background-color: var(--panel-bg-color);  /* Changed from white to softer color */
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  color: var(--light-text);
+  cursor: pointer;
+  transition: var(--transition);
+  display: block;
+  text-align: left;
+  position: relative;
+}
+
+.custom-file-label::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2381C784'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.custom-file-input:hover + .custom-file-label {
+  border-color: var(--accent-color);
+  color: var(--primary-color);
+}
+
+#file-list-container {
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  margin-top: 16px;
+  background-color: var(--bg-color);  /* Softer background */
+}
+
+.alert {
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+}
+
+.alert-danger {
+  background-color: rgba(239, 83, 80, 0.1);
+  color: #D32F2F;
+  border-left: 3px solid #EF5350;
+}
+
+.alert-warning {
+  background-color: rgba(255, 183, 77, 0.1);
+  color: #F57C00;
+  border-left: 3px solid #FFB74D;
+}
+
+/* スクロールバーのカスタマイズ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--secondary-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
+
+#selected-file {
+  padding: 8px 12px;
+  background-color: var(--secondary-color);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+#description {
+  background-color: rgba(200, 230, 201, 0.3);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+/* 出力エリアのスタイル */
+#output-area {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#output-area h4 {
+  text-align: center;
+  color: var(--primary-color);
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--accent-color);
+}
+
+#output-area p {
+  padding: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* スタンプ風の要素 */
+.stamp {
+  position: absolute;
+  top: 40px;
+  right: 60px;
+  transform: rotate(15deg);
+  font-size: 16px;
+  font-weight: bold;
+  color: rgba(220, 38, 38, 0.7);
+  border: 2px solid rgba(220, 38, 38, 0.7);
+  border-radius: 5px;
+  padding: 5px 10px;
+  z-index: 10;
+}
+
+/* パラメータコンテナのスタイル強化 */
+.parameters-container {
+  background-color: var(--secondary-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* READMEアコーディオンのスタイル */
+#readmeAccordion .card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+
+#readmeAccordion .card-header {
+  background-color: var(--secondary-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0;
+}
+
+#readmeAccordion .btn-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 12px 15px;
+  position: relative;
+}
+
+#readmeAccordion .btn-link:hover {
+  color: var(--primary-hover);
+  text-decoration: none;
+}
+
+#readmeAccordion .btn-link:focus {
+  box-shadow: none;
+  text-decoration: none;
+}
+
+#readmeAccordion .btn-link.collapsed::after {
+  content: '\25BC'; /* 下向き矢印 */
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+}
+
+#readmeAccordion .btn-link:not(.collapsed)::after {
+  content: '\25B2'; /* 上向き矢印 */
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+}
+
+#readmeAccordion .card-body {
+  padding: 20px;
+  background-color: var(--bg-color);
+  background-image: var(--paper-texture);
+  background-blend-mode: overlay;
+  background-size: 100px;
+}
+
+#readmeAccordion h4 {
+  color: var(--primary-color);
+  margin-bottom: 15px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--accent-color);
+  padding-bottom: 8px;
+}
+
+#readmeAccordion h5 {
+  color: var(--text-color);
+  margin: 20px 0 10px;
+  font-weight: 600;
+}
+
+#readmeAccordion ul, 
+#readmeAccordion ol {
+  padding-left: 25px;
+}
+
+#readmeAccordion li {
+  margin-bottom: 8px;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .d-flex {
+    flex-direction: column;
+  }
+  
+  #file-content, 
+  #file-list {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+
+  #readmeAccordion .btn-link {
+    font-size: 14px;
+    padding: 10px;
+  }
+  
+  #readmeAccordion .card-body {
+    padding: 15px;
+  }
+}
