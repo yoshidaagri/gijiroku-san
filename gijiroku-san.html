@@ -34,16 +34,16 @@
                         </div>
                         <div id="collapseReadme" class="collapse" aria-labelledby="headingReadme" data-parent="#readmeAccordion">
                             <div class="card-body">
-                                <h4>議事録さん ver 2.00</h4>
-                                <p>「<strong>議事録さん</strong>」は、Teamsのトランスクリプト（VTTファイル）をドラッグ＆ドロップで読み込み、役職に合わせた会議議事録を自動生成するための HTML/JavaScript アプリケーションです。<br>
-                                コピー後は、対話型AI サイトが自動的に起動し、すぐにプロンプトとトランスクリプト内容を連携できます。</p>
+                                <h4>議事録さん ver 2.10</h4>
+                                <p>「<strong>議事録さん</strong>」は、Teamsのトランスクリプト（VTTファイル）と会議資料をドラッグ＆ドロップで読み込み、役職に合わせた会議議事録を自動生成するための HTML/JavaScript アプリケーションです。<br>
+                                コピー後は、対話型AI サイトが自動的に起動し、すぐにプロンプトとトランスクリプト内容と会議資料を連携できます。</p>
                                 
                                 <h5>使い方</h5>
                                 <ol>
                                     <li><strong>議事録出力パラメータを設定</strong><br>
                                     議事詳細度、決定事項、課題事項、問題事項、役職などを選択します。</li>
-                                    <li><strong>トランスクリプトのドラッグ＆ドロップ</strong><br>
-                                    画面下部のドロップゾーンにTeamsのトランスクリプト(VTTファイル)をドロップします。</li>
+                                    <li><strong>トランスクリプトと会議資料のドラッグ＆ドロップ</strong><br>
+                                    画面下部のドロップゾーンにTeamsのトランスクリプト(VTTファイル)と会議資料（Excel, Word, PDF, PowerPoint）をドロップします。</li>
                                     <li><strong>内容をコピーして AI に連携</strong><br>
                                     「クリップボードにコピー ＋ AIに連携」ボタンを押して処理を実行します。</li>
                                 </ol>
@@ -52,6 +52,8 @@
                                 <ul>
                                     <li><strong>VTTファイル解析機能</strong><br>
                                     Teamsの会議からエクスポートしたトランスクリプトファイルを解析します。</li>
+                                    <li><strong>会議資料処理機能（新機能）</strong><br>
+                                    Excel、Word、PDF、PowerPointファイルからテキスト、セルデータ、コメント等を抽出し、トランスクリプトと組み合わせてより正確な議事録を生成します。</li>
                                     <li><strong>柔軟な議事録パラメータ設定</strong><br>
                                     議事詳細度、決定事項、課題事項、問題事項を設定し、読み手の役職（経営陣・部課長など）に合わせて内容を最適化できます。</li>
                                     <li><strong>自動プロンプト生成機能</strong><br>
@@ -63,7 +65,8 @@
                                 <h5>動作上の注意</h5>
                                 <ul>
                                     <li>このツールはTeamsからエクスポートしたVTT形式のトランスクリプトファイルに最適化されています。</li>
-                                    <li>非常に長時間の会議トランスクリプトの場合、AIサービスの入力制限を超える可能性があります。</li>
+                                    <li>会議資料はオプションですが、アップロードすることでより詳細な議事録を生成できます。</li>
+                                    <li>非常に長時間の会議トランスクリプトや大量の会議資料の場合、AIサービスの入力制限を超える可能性があります。</li>
                                 </ul>
                             </div>
                         </div>
@@ -167,10 +170,10 @@
                     </div>
                     <div class="mb-2">
                         <label for="input-files" class="font-weight-bold">
-                            必要なドキュメント (VTT): <br>
+                            必要なドキュメント (VTT) + 会議資料（Excel, Word, PowerPoint, PDF): <br>
                         </label>
                         <div class="alert alert-danger" role="alert">
-                            <small>※Teamsのトランスクリプト(.vtt)ファイルをアップロードしてください。VTTファイル形式のみ対応しています。複数のVTTファイルをアップロードすることも可能です。</small>
+                            <small>※Teamsのトランスクリプト(.vtt)ファイルをアップロードしてください。加えて、会議資料（Excel, Word, PowerPoint, PDF）もアップロード可能です。複数のファイルをアップロードすることも可能です。</small>
                         </div>
 
                         <div id="input-files" class="p-2 small"></div>
@@ -184,7 +187,7 @@
                         ondragover="dragOverHandler(event)"
                         class="mt-3"
                     >
-                    VTTファイルをドラッグ＆ドロップで追加
+                    VTTファイル + 会議資料（Excel, Word, PowerPoint, PDF）をドラッグ＆ドロップで追加
                     </div>
                     <div id="dropped-files" class="mt-3"></div>
                     <button onclick="copyToClipboard()" class="btn btn-primary mr-2">

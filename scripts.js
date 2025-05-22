@@ -93,6 +93,209 @@ function isVTTFile(file) {
     return /\.vtt$/i.test(file.name);
 }
 
+// ▼▼▼ scripts_prompt.jsから移植: ファイル形式判定関数 ▼▼▼
+function isExcelFile(file) {
+    return /\.(xlsx|xls|xlsm)$/i.test(file.name);
+}
+function isWordFile(file) {
+    return /\.(doc|docx)$/i.test(file.name);
+}
+function isPDFFile(file) {
+    return /\.pdf$/i.test(file.name);
+}
+function isPowerPointFile(file) {
+    return /\.(ppt|pptx)$/i.test(file.name);
+}
+
+// ▼▼▼ scripts_prompt.jsから移植: ファイル読み込み関数等 ▼▼▼
+
+// ▼▼▼ Excelファイル読み込み関数（簡略版） ▼▼▼
+async function readExcelFile(file) {
+    const data = new Uint8Array(await file.arrayBuffer());
+    try {
+        const workbook = XLSX.read(data, {
+            type: 'array',
+            cellComments: true,
+            bookFiles: true,
+            cellNF: true,
+            cellDates: true
+        });
+
+        let text = "";
+        workbook.SheetNames.forEach(sheetName => {
+            const sheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+            
+            // 空行・空列を除去
+            const processedData = jsonData.filter(row => row && row.some(cell => cell !== ""));
+            
+            if (processedData.length > 0) {
+                const csvData = processedData.map(row => row.join('\t')).join('\n');
+                text += `【Sheet: ${sheetName}】\n${csvData}\n\n\n`;
+            }
+
+            // コメントも追加
+            if (sheet["!comments"] && Array.isArray(sheet["!comments"]) && sheet["!comments"].length > 0) {
+                text += `【Comments in ${sheetName}】\n`;
+                sheet["!comments"].forEach(comment => {
+                    const author = comment.a || "unknown";
+                    const commentText = (comment.t || "").trim();
+                    if (commentText) {
+                        const cellRef = comment.ref || "unknown cell";
+                        text += `Cell ${cellRef} (by ${author}): ${commentText}\n`;
+                    }
+                });
+                text += "\n";
+            }
+        });
+
+        return text;
+    } catch (error) {
+        console.error("[DEBUG] Error in readExcelFile:", error);
+        throw error;
+    }
+}
+
+// ▼▼▼ Wordファイル読み込み関数 ▼▼▼
+function readWordFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+            try {
+                const arrayBuffer = e.target.result;
+                const result = await mammoth.convertToHtml({ arrayBuffer });
+                let html = result.value || "";
+                
+                // HTMLをテキストに変換（簡略版）
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+                let text = doc.body.textContent || "";
+                
+                // 重複改行を削除
+                text = text.replace(/\n\s*\n/g, "\n");
+                
+                resolve(text);
+            } catch (error) {
+                console.error("[DEBUG] Error in readWordFile:", error);
+                reject(error);
+            }
+        };
+        reader.onerror = function (error) {
+            console.error("[DEBUG] FileReader error in readWordFile:", error);
+            reject(error);
+        };
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+// ▼▼▼ PDFファイル読み込み関数 ▼▼▼
+function extractPDF(file) {
+    return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.onload = function () {
+            const typedarray = new Uint8Array(this.result);
+            pdfjsLib.getDocument(typedarray).promise.then(pdf => {
+                const maxPages = pdf.numPages;
+                const pageTextPromises = [];
+                for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
+                    pageTextPromises.push(
+                        pdf.getPage(pageNum).then(page => {
+                            return page.getTextContent().then(textContent => {
+                                let textItems = textContent.items;
+                                // テキストアイテムをY座標（降順）とX座標（昇順）でソート
+                                textItems.sort((a, b) => {
+                                    const yDiff = b.transform[5] - a.transform[5];
+                                    if (Math.abs(yDiff) < 5) {
+                                        return a.transform[4] - b.transform[4];
+                                    }
+                                    return yDiff;
+                                });
+                                
+                                return textItems.map(item => item.str).join(' ');
+                            });
+                        })
+                    );
+                }
+                Promise.all(pageTextPromises).then(pagesText => {
+                    const fullText = pagesText.join("\n\n");
+                    resolve(fullText);
+                }).catch(err => {
+                    console.error("[DEBUG] Error in pageTextPromises:", err);
+                    reject(err);
+                });
+            }).catch(err => {
+                console.error("[DEBUG] Error in pdfjsLib.getDocument:", err);
+                reject(err);
+            });
+        };
+        fileReader.onerror = function (error) {
+            console.error("[DEBUG] FileReader error in extractPDF:", error);
+            reject(error);
+        };
+        fileReader.readAsArrayBuffer(file);
+    });
+}
+
+// ▼▼▼ PowerPointファイル読み込み関数（簡略版） ▼▼▼
+function readPowerPointFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const arrayBuffer = e.target.result;
+                const zip = await JSZip.loadAsync(arrayBuffer);
+                let text = "";
+                
+                // スライドファイルを検索
+                const fileNames = Object.keys(zip.files);
+                const slideFileNames = fileNames.filter(fn => /^ppt\/slides\/slide\d+\.xml$/i.test(fn));
+                
+                for (const fileName of slideFileNames) {
+                    const fileObj = zip.files[fileName];
+                    if (!fileObj) continue;
+                    const xmlString = await fileObj.async("string");
+                    const slideText = parseSlideXml(xmlString, fileName);
+                    if (slideText.trim()) {
+                        text += `【Slide: ${fileName}】\n${slideText}\n\n`;
+                    }
+                }
+                
+                resolve(text);
+            } catch (err) {
+                console.error("[DEBUG] readPowerPointFile error:", err);
+                reject(err);
+            }
+        };
+        reader.onerror = function (error) {
+            console.error("[DEBUG] FileReader error in readPowerPointFile:", error);
+            reject(error);
+        };
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+// PowerPointスライドXML解析関数
+function parseSlideXml(xmlString, fileName) {
+    let result = "";
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlString, "application/xml");
+
+    if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
+        console.warn(`XML parse error in ${fileName}`);
+        return result;
+    }
+
+    // <a:t>要素を抽出
+    const aTList = xmlDoc.getElementsByTagName("a:t");
+    for (let i = 0; i < aTList.length; i++) {
+        const text = aTList[i].textContent;
+        if (text.trim()) {
+            result += text + "\n";
+        }
+    }
+    return result;
+}
+
 // 議事録詳細度を返す関数
 function getDetailLevel(level) {
     const detailLevels = {
@@ -143,6 +346,34 @@ function getCustomPrompt(text) {
     return `👀 追加要件: ${text} を必ず反映してください`;
 }
 
+// 会議資料プロンプトを生成する関数
+function generateMaterialsPrompt() {
+    const droppedFiles = document.querySelectorAll("#dropped-files .file-item");
+    let hasMaterials = false;
+    
+    // 会議資料ファイルがあるかチェック
+    for (const item of droppedFiles) {
+        const file = item.file;
+        if (isExcelFile(file) || isWordFile(file) || isPDFFile(file) || isPowerPointFile(file)) {
+            hasMaterials = true;
+            break;
+        }
+    }
+    
+    if (!hasMaterials) {
+        return ""; // 会議資料がない場合は空文字列を返す
+    }
+    
+    return `\n\n# 会議資料参考要件
+会議トランスクリプトに加えて、以下の会議資料が提供されています。議事録作成時に以下の点を参考にしてください：
+
+- 会議資料の内容とトランスクリプトの議論を照らし合わせて、より正確で詳細な議事録を作成してください
+- 資料内の重要な情報（数値、グラフ、表、図形内テキスト等）が会議で言及された場合は、その内容を議事録に反映してください
+- 資料とトランスクリプトの間に齛齬がある場合は、その点を明記してください
+
+会議資料の内容は「<MATERIALS_START>」から「<MATERIALS_END>」の間に記載されています。`;
+}
+
 // 議事録監査プロンプトを生成する関数
 function generateAuditPrompt() {
     let auditPrompt = "";
@@ -150,7 +381,7 @@ function generateAuditPrompt() {
     // 共通プロンプト
     const commonPrompt = `
 - 議事録監査は議事録の最後尾に追加してください
-- 指摘と提案は、可能であれば 根拠となる発言（引用）を添付してください。  
+- 指摘と提案は、可能であれば 根拠となる発言の概略を添付してください。原文添付は不要です。  
 - 行数・語数の制限は不要ですが、簡潔さを優先してください。`;
     
     // 各チェックボックスの状態を確認
@@ -259,6 +490,12 @@ function generatePrompt() {
         prompt += auditPrompt;
     }
     
+    // 会議資料があれば追加
+    const materialsPrompt = generateMaterialsPrompt();
+    if (materialsPrompt) {
+        prompt += materialsPrompt;
+    }
+    
     prompt += "\n以下のトランスクリプトを基に、上記の要件に合わせた議事録を作成してください。\n";
     
     return prompt;
@@ -332,8 +569,6 @@ function parseVTTFile(content) {
 
 // ▼▼▼ copyToClipboard: ドロップされたVTTファイルの読込結果をすべて連結してコピー ▼▼▼
 function copyToClipboard() {
-    // console.log("[DEBUG] copyToClipboard called.");
-
     // 生成されたプロンプトを取得
     const prompt = generatePrompt();
     const finalPrompt = prompt;
@@ -348,73 +583,134 @@ function copyToClipboard() {
     const droppedFiles = document.querySelectorAll("#dropped-files .file-item");
     let filesToRead = droppedFiles.length;
     let vttFileCount = 0;
+    let materialsFileCount = 0;
     
-    // console.log("[DEBUG] filesToRead:", filesToRead);
-
     if (filesToRead === 0) {
-        // VTTファイルがない場合は処理を中止
         alert("VTTファイルをアップロードしてください。");
         return;
-    } else {
-        // トランスクリプトデータを格納する配列
-        let transcriptContent = [];
+    }
+    
+    // トランスクリプトデータと会議資料データを格納する配列
+    let transcriptContent = [];
+    let materialsContent = [];
+    
+    droppedFiles.forEach((item) => {
+        const file = item.file;
         
-        droppedFiles.forEach((item) => {
-            const file = item.file;
-            // console.log("[DEBUG] Processing dropped file:", file.name);
-
-            // VTTファイルのみ処理
-            if (isVTTFile(file)) {
-                vttFileCount++;
-                // VTTファイルの処理
-                const reader = new FileReader();
-                reader.readAsText(file);
-                reader.onload = function (e) {
-                    const fileContent = e.target.result;
-                    const parsedContent = parseVTTFile(fileContent);
-                    transcriptContent.push("");
-                    transcriptContent.push(`${file.name} (トランスクリプト)`);
-                    transcriptContent.push("");
-                    transcriptContent.push(parsedContent);
-                    filesToRead--;
-                    if (filesToRead === 0) {
-                        if (vttFileCount > 0) {
-                            // トランスクリプトをTRANSCRIPT_STARTとTRANSCRIPT_ENDで囲む
-                            const transcriptWrapped = "\n<TRANSCRIPT_START>\n" + transcriptContent.join("\n") + "\n<TRANSCRIPT_END>\n";
-                            copyText(finalPrompt + transcriptWrapped);
-                        } else {
-                            alert("VTTファイルが含まれていません。アップロードしてください。");
-                        }
-                    }
-                };
-                reader.onerror = function (err) {
-                    console.error("[DEBUG] Error reading VTT file:", err);
-                    filesToRead--;
-                    if (filesToRead === 0) {
-                        if (vttFileCount > 0) {
-                            // トランスクリプトをTRANSCRIPT_STARTとTRANSCRIPT_ENDで囲む
-                            const transcriptWrapped = "\n<TRANSCRIPT_START>\n" + transcriptContent.join("\n") + "\n<TRANSCRIPT_END>\n";
-                            copyText(finalPrompt + transcriptWrapped);
-                        } else {
-                            alert("VTTファイルが含まれていません。アップロードしてください。");
-                        }
-                    }
-                };
-            } else {
-                // VTT以外のファイルはスキップ
-                alert(`${file.name} はVTT形式ではありません。スキップします。`);
+        if (isVTTFile(file)) {
+            // VTTファイルの処理
+            vttFileCount++;
+            const reader = new FileReader();
+            reader.readAsText(file);
+            reader.onload = function (e) {
+                const fileContent = e.target.result;
+                const parsedContent = parseVTTFile(fileContent);
+                transcriptContent.push("");
+                transcriptContent.push(`${file.name} (トランスクリプト)`);
+                transcriptContent.push("");
+                transcriptContent.push(parsedContent);
                 filesToRead--;
-                if (filesToRead === 0) {
-                    if (vttFileCount > 0) {
-                        // トランスクリプトをTRANSCRIPT_STARTとTRANSCRIPT_ENDで囲む
-                        const transcriptWrapped = "\n<TRANSCRIPT_START>\n" + transcriptContent.join("\n") + "\n<TRANSCRIPT_END>\n";
-                        copyText(finalPrompt + transcriptWrapped);
-                    } else {
-                        alert("VTTファイルが含まれていません。アップロードしてください。");
-                    }
-                }
+                checkAllFilesProcessed();
+            };
+            reader.onerror = function (err) {
+                console.error("[DEBUG] Error reading VTT file:", err);
+                filesToRead--;
+                checkAllFilesProcessed();
+            };
+        } else if (isExcelFile(file) || isWordFile(file) || isPDFFile(file) || isPowerPointFile(file)) {
+            // 会議資料ファイルの処理
+            materialsFileCount++;
+            processMaterialFile(file);
+        } else {
+            // サポートされていないファイル形式
+            alert(`${file.name} はサポートされていないファイル形式です。スキップします。`);
+            filesToRead--;
+            checkAllFilesProcessed();
+        }
+    });
+    
+    // 会議資料ファイルを処理する関数
+    function processMaterialFile(file) {
+        if (isExcelFile(file)) {
+            readExcelFile(file).then((fileContent) => {
+                materialsContent.push("");
+                materialsContent.push(`${file.name}`);
+                materialsContent.push("");
+                materialsContent.push(fileContent);
+                filesToRead--;
+                checkAllFilesProcessed();
+            }).catch(e => {
+                console.error("[DEBUG] readExcelFile error:", e);
+                filesToRead--;
+                checkAllFilesProcessed();
+            });
+        } else if (isWordFile(file)) {
+            readWordFile(file).then((fileContent) => {
+                materialsContent.push("");
+                materialsContent.push(`${file.name}`);
+                materialsContent.push("");
+                materialsContent.push(fileContent);
+                filesToRead--;
+                checkAllFilesProcessed();
+            }).catch(e => {
+                console.error("[DEBUG] readWordFile error:", e);
+                filesToRead--;
+                checkAllFilesProcessed();
+            });
+        } else if (isPDFFile(file)) {
+            extractPDF(file).then((fileContent) => {
+                materialsContent.push("");
+                materialsContent.push(`${file.name}`);
+                materialsContent.push("");
+                materialsContent.push(fileContent);
+                filesToRead--;
+                checkAllFilesProcessed();
+            }).catch(e => {
+                console.error("[DEBUG] extractPDF error:", e);
+                filesToRead--;
+                checkAllFilesProcessed();
+            });
+        } else if (isPowerPointFile(file)) {
+            readPowerPointFile(file).then((fileContent) => {
+                materialsContent.push("");
+                materialsContent.push(`${file.name}`);
+                materialsContent.push("");
+                materialsContent.push(fileContent);
+                filesToRead--;
+                checkAllFilesProcessed();
+            }).catch(e => {
+                console.error("[DEBUG] readPowerPointFile error:", e);
+                filesToRead--;
+                checkAllFilesProcessed();
+            });
+        }
+    }
+    
+    // すべてのファイルが処理されたかチェックする関数
+    function checkAllFilesProcessed() {
+        if (filesToRead === 0) {
+            if (vttFileCount === 0) {
+                alert("VTTファイルが含まれていません。アップロードしてください。");
+                return;
             }
-        });
+            
+            // 最終コンテンツを組み立てる
+            let finalContent = finalPrompt;
+            
+            // トランスクリプトを追加
+            if (transcriptContent.length > 0) {
+                const transcriptWrapped = "\n<TRANSCRIPT_START>\n" + transcriptContent.join("\n") + "\n<TRANSCRIPT_END>\n";
+                finalContent += transcriptWrapped;
+            }
+            
+            // 会議資料を追加（ある場合）
+            if (materialsContent.length > 0) {
+                const materialsWrapped = "\n<MATERIALS_START>\n" + materialsContent.join("\n") + "\n<MATERIALS_END>\n";
+                finalContent += materialsWrapped;
+            }
+            
+            copyText(finalContent);
+        }
     }
 }
 
@@ -449,9 +745,9 @@ function copyText(text) {
 
 // ▼▼▼ クリアボタンで初期化 ▼▼▼
 function clearAll() {
-    // console.log("[DEBUG] clearAll called.");
     document.getElementById("dropped-files").innerHTML = "";
-    document.querySelector('input[type="file"]').value = "";
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) fileInput.value = "";
     document.getElementById("selected-file").textContent = "";
     document.getElementById("description").innerText = "";
     document.getElementById("input-files").innerText = "";
