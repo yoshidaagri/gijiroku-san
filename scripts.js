@@ -374,6 +374,43 @@ function generateMaterialsPrompt() {
 会議資料の内容は「<MATERIALS_START>」から「<MATERIALS_END>」の間に記載されています。`;
 }
 
+// Microsoft Office形式出力プロンプトを生成する関数
+function generateOfficePrompt() {
+    let officePrompt = "";
+    
+    // 各チェックボックスの状態を確認
+    const officeWord = document.getElementById("office-word").checked;
+    const officeNotepad = document.getElementById("office-notepad").checked;
+    
+    if (officeWord || officeNotepad) {
+        officePrompt += "\n\n# Microsoft Office形式出力要件\n";
+        officePrompt += "議事録作成後、以下の形式調整を行ってください：\n\n";
+        
+        if (officeWord) {
+            officePrompt += `**Microsoft Word向け出力調整:**
+- Markdownの見出し記号（#, ##, ###）を削除し、通常のテキストとして出力してください
+- 太字表記（**太字**）を削除し、通常のテキストとして出力してください
+- 箇条書きのMarkdown記号（-, *）を削除し、Wordの標準的な箇条書き記号（・）に変更してください
+- 改行コードはWindows形式（CRLF）に統一してください
+- Microsoft Wordに貼り付けて適切にフォーマットされるよう調整してください
+
+`;
+        }
+        
+        if (officeNotepad) {
+            officePrompt += `**メモ帳向け出力調整:**
+- すべてのMarkdown記法（#, ##, ###, **, -, *等）を削除し、プレーンテキストとして出力してください
+- 改行コードはWindows形式（CRLF）に統一してください
+- 特殊文字や装飾文字は使用せず、ASCII文字のみで構成してください
+- メモ帳で開いた際に読みやすくなるよう、適切なスペースと改行で整理してください
+
+`;
+        }
+    }
+    
+    return officePrompt;
+}
+
 // 議事録監査プロンプトを生成する関数
 function generateAuditPrompt() {
     let auditPrompt = "";
@@ -488,6 +525,12 @@ function generatePrompt() {
     const auditPrompt = generateAuditPrompt();
     if (auditPrompt) {
         prompt += auditPrompt;
+    }
+    
+    // Microsoft Office形式出力プロンプトがあれば追加
+    const officePrompt = generateOfficePrompt();
+    if (officePrompt) {
+        prompt += officePrompt;
     }
     
     // 会議資料があれば追加
@@ -634,7 +677,7 @@ function copyToClipboard() {
         if (isExcelFile(file)) {
             readExcelFile(file).then((fileContent) => {
                 materialsContent.push("");
-                materialsContent.push(`${file.name}`);
+                materialsContent.push(`# 会議資料: ${file.name}`);
                 materialsContent.push("");
                 materialsContent.push(fileContent);
                 filesToRead--;
@@ -647,7 +690,7 @@ function copyToClipboard() {
         } else if (isWordFile(file)) {
             readWordFile(file).then((fileContent) => {
                 materialsContent.push("");
-                materialsContent.push(`${file.name}`);
+                materialsContent.push(`# 会議資料: ${file.name}`);
                 materialsContent.push("");
                 materialsContent.push(fileContent);
                 filesToRead--;
@@ -660,7 +703,7 @@ function copyToClipboard() {
         } else if (isPDFFile(file)) {
             extractPDF(file).then((fileContent) => {
                 materialsContent.push("");
-                materialsContent.push(`${file.name}`);
+                materialsContent.push(`# 会議資料: ${file.name}`);
                 materialsContent.push("");
                 materialsContent.push(fileContent);
                 filesToRead--;
@@ -673,7 +716,7 @@ function copyToClipboard() {
         } else if (isPowerPointFile(file)) {
             readPowerPointFile(file).then((fileContent) => {
                 materialsContent.push("");
-                materialsContent.push(`${file.name}`);
+                materialsContent.push(`# 会議資料: ${file.name}`);
                 materialsContent.push("");
                 materialsContent.push(fileContent);
                 filesToRead--;
@@ -735,7 +778,7 @@ function copyText(text) {
     navigator.clipboard.writeText(finalText).then(
         function () {
             // console.log("[DEBUG] Successfully copied text to clipboard. Opening Chat AI.");
-            window.open("ここにお好みの生成AIのURL", "_blank");
+            window.open("", "_blank");
         },
         function () {
             alert("コピーに失敗しました！");
@@ -764,4 +807,8 @@ function clearAll() {
     document.getElementById("audit-facilitator").checked = false;
     document.getElementById("audit-important-points").checked = false;
     document.getElementById("audit-action-items").checked = false;
+    
+    // Microsoft Office形式チェックボックスをリセット
+    document.getElementById("office-word").checked = false;
+    document.getElementById("office-notepad").checked = false;
 }

@@ -7,7 +7,7 @@
     />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>議事録さん ver 2.10</title>
+    <title>議事録さん ver 2.20</title>
     <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -15,7 +15,7 @@
         <!-- ヘッダータイトルを追加 -->
         <div class="row mb-3 mt-2">
             <div class="col-12 text-center">
-                <h2 class="text-primary">議事録さん ver 2.00</h2>
+                <h2 class="text-primary">議事録さん ver 2.20</h2>
                 <p class="text-muted">役職に合わせた会議議事録を自動生成し、会議改善提案もできる！</p>
             </div>
         </div>
@@ -34,7 +34,7 @@
                         </div>
                         <div id="collapseReadme" class="collapse" aria-labelledby="headingReadme" data-parent="#readmeAccordion">
                             <div class="card-body">
-                                <h4>議事録さん ver 2.10</h4>
+                                <h4>議事録さん ver 2.20</h4>
                                 <p>「<strong>議事録さん</strong>」は、Teamsのトランスクリプト（VTTファイル）と会議資料をドラッグ＆ドロップで読み込み、役職に合わせた会議議事録を自動生成するための HTML/JavaScript アプリケーションです。<br>
                                 コピー後は、対話型AI サイトが自動的に起動し、すぐにプロンプトとトランスクリプト内容と会議資料を連携できます。</p>
                                 
@@ -67,6 +67,35 @@
                                     <li>このツールはTeamsからエクスポートしたVTT形式のトランスクリプトファイルに最適化されています。</li>
                                     <li>会議資料はオプションですが、アップロードすることでより詳細な議事録を生成できます。</li>
                                     <li>非常に長時間の会議トランスクリプトや大量の会議資料の場合、AIサービスの入力制限を超える可能性があります。</li>
+                                    <li>Microsoft Office形式出力機能を使用すると、Word・メモ帳等への貼り付けに最適化された形式で出力されます。</li>
+                                </ul>
+                                
+                                <h5>修正履歴</h5>
+                                <ul>
+                                    <li><strong>ver 2.20 (2024年12月)</strong>
+                                        <ul>
+                                            <li>Microsoft Word向け出力機能を追加</li>
+                                            <li>メモ帳向け出力機能を追加</li>
+                                            <li>Markdownタグ削除機能を追加</li>
+                                            <li>Windows改行コード（CRLF）対応を追加</li>
+                                            <li>会議資料の見出し表記を改善（「# 会議資料:」形式に統一）</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>ver 2.10</strong>
+                                        <ul>
+                                            <li>会議資料処理機能を追加（Excel、Word、PDF、PowerPoint対応）</li>
+                                            <li>議事録監査機能を追加</li>
+                                            <li>役職別出力最適化機能を追加</li>
+                                            <li>自由入力によるカスタマイズ機能を追加</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>ver 2.00</strong>
+                                        <ul>
+                                            <li>VTTファイル解析機能の基本実装</li>
+                                            <li>議事録パラメータ設定機能を追加</li>
+                                            <li>プロンプト自動生成機能を追加</li>
+                                        </ul>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -167,6 +196,22 @@
                           </div>
                         </div>
                       </div>
+
+                      <!-- Microsoft Office形式出力設定 -->
+                      <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Microsoft Office形式:</label>
+                        <div class="col-sm-8">
+                          <small class="form-text text-muted mb-2">※Word・メモ帳等への貼り付け用に最適化</small>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="office-word" value="word">
+                            <label class="form-check-label" for="office-word">Microsoft Word向け出力</label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="office-notepad" value="notepad">
+                            <label class="form-check-label" for="office-notepad">メモ帳向け出力</label>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div class="mb-2">
                         <label for="input-files" class="font-weight-bold">
@@ -202,7 +247,7 @@
         <!-- フッター情報 -->
         <div class="row mt-3">
             <div class="col-12 text-center">
-                <p class="small text-muted">議事録さん ver 2.00 - オーダーメイド議事録生成ツール</p>
+                                                <p class="small text-muted">議事録さん ver 2.20 - オーダーメイド議事録生成ツール</p>
             </div>
         </div>
     </div>
